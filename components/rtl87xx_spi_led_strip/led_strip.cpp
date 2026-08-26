@@ -135,7 +135,15 @@ void RTL87XXSPILEDStripLightOutput::write_state(light::LightState *state) {
   }
 
   this->encode_();
-  spi_master_write_stream(&this->spi_, reinterpret_cast<char *>(this->encoded_buf_), this->get_encoded_buffer_size_());
+  if (spi_master_write_stream_dma(&this->spi_, reinterpret_cast<char *>(this->encoded_buf_),
+                                  this->get_encoded_buffer_size_()) != HAL_OK) {
+    ESP_LOGE(TAG, "SPI DMA transfer setup failed");
+    this->status_set_warning();
+    return;
+  }
+  while (this->spi_.state & SPI_STATE_TX_BUSY) {
+    yield();
+  }
   while (spi_busy(&this->spi_)) {
     yield();
   }
