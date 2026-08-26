@@ -107,7 +107,6 @@ bool RTL87XXSPILEDStripLightOutput::setup_spi_() {
   spi_init(&this->spi_, mosi, miso, sck, cs);
   spi_format(&this->spi_, 8, 0, 0);
   spi_frequency(&this->spi_, this->spi_frequency_);
-  hal_ssi_toggle_between_frame(&this->spi_.hal_ssi_adaptor, ENABLE);
   this->spi_initialized_ = true;
 
   ESP_LOGI(TAG, "Initialized SPI ring bus mosi=%u miso=%u sck=%u cs=%u", this->data_pin_, this->miso_pin_,
